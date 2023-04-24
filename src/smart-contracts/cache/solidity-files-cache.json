@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "C:\\Users\\hamil\\GeoPrize\\src\\contracts\\sepolia-testnet-deployment\\contracts\\FirstContract.sol": {
+    "C:\\Users\\hamil\\GeoPrize\\src\\smart-contracts\\contracts\\FirstContract.sol": {
       "lastModificationDate": 1682352222645,
       "contentHash": "caeeee0ee2729631b8c7ca11cfc6221c",
       "sourceName": "contracts/FirstContract.sol",
@@ -36,7 +36,7 @@
         "HelloWorld"
       ]
     },
-    "C:\\Users\\hamil\\GeoPrize\\src\\contracts\\sepolia-testnet-deployment\\contracts\\GeoPrize-Contrac.sol": {
+    "C:\\Users\\hamil\\GeoPrize\\src\\smart-contracts\\contracts\\GeoPrize-Contrac.sol": {
       "lastModificationDate": 1682352239756,
       "contentHash": "d41d8cd98f00b204e9800998ecf8427e",
       "sourceName": "contracts/GeoPrize-Contrac.sol",
