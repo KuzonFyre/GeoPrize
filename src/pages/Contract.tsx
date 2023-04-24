@@ -1,11 +1,63 @@
 import React from 'react'
+import { useEffect, useState } from "react";
 import {storage} from '../firebase'
 //@ts-ignore"
 import {HelloWorldContract} from "../smart-contracts/deployments/interact.js";
-export const Contracts = () => {
-return (<div>
-    <h1>Contracts</h1>
+import alchemyLogo from "../assets/alchemylogo.svg";
+
+
+    function addSmartContractListener() { //TODO: implement
     
+  }
+
+  function addWalletListener() { //TODO: implement
+    
+  }
+
+  const connectWalletPressed = async () => { //TODO: implement
+    
+  };
+
+  const onUpdatePressed = async () => { //TODO: implement
+    
+  };
+export const Contract = () => {
+    const [walletAddress, setWallet] = useState("");
+      const [status, setStatus] = useState("");
+      const [message, setMessage] = useState("No connection to the network."); //default message
+      const [newMessage, setNewMessage] = useState("");
+return (<div>
+     <div id="container">
+        <img id="logo" src={alchemyLogo}></img>
+       <button id="walletButton" onClick={connectWalletPressed}>
+         {walletAddress.length > 0 ? (
+          "Connected: " +
+          String(walletAddress).substring(0, 6) +
+          "..." +
+          String(walletAddress).substring(38)
+        ) : (
+          <span>Connect Wallet</span>
+        )}
+      </button>
+
+      <h2 style={{ paddingTop: "50px" }}>Current Message:</h2>
+      <p>{message}</p>
+
+      <h2 style={{ paddingTop: "18px" }}>New Message:</h2>
+
+      <div>
+        <input
+          type="text"
+          placeholder="Update the message in your smart contract."
+          onChange={(e) => setNewMessage(e.target.value)}
+          value={newMessage}
+        />
+
+        <button id="publish" onClick={onUpdatePressed}>
+          Update
+        </button>
+      </div>
+    </div>
 </div>)
 }
 

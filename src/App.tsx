@@ -10,7 +10,7 @@ import ReactDOM from 'react-dom/client'
 import { Root} from './pages/Root'
 import {Login} from './pages/Login'
 import {Signup} from './pages/Signup'
-import {Contracts} from './pages/Contracts'
+import {Contract} from './pages/Contract'
 import { CreateContract } from './pages/CreateContract'
 
 
@@ -32,8 +32,8 @@ const router = createBrowserRouter([
         element: <Signup />
       },
       {
-        path: 'contracts/',
-        element: <Contracts />
+        path: 'contract/',
+        element: <Contract />
       }
     ]
   }
