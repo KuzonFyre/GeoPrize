@@ -1,3 +1,14 @@
 # GeoPrize
 
-GeoPrize is a web application that can be used to create a geo location smart contract. The awarder specifies a geolocation and a prize and assigns the smart contract to the awardee. On arriving at the given geolcation signed in the awardee recivies their prize. 
+GeoPrize is a web application that can be used to create a geo location smart contract. The awarder specifies a geolocation and a prize and assigns the smart contract to the awardee. On arriving at the given geolcation signed in the awardee recivies their prize.
+
+### Technologies Used:
+- HardHat
+- Ethers
+- MetaMask
+- Google Maps API
+- Firebase
+- Solidity
+- React
+- Vite
+- Node.js
