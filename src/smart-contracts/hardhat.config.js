@@ -1,19 +1,17 @@
 
 /** @type import('hardhat/config').HardhatUserConfig */
-require("@nomiclabs/hardhat-ethers");
+import "@nomiclabs/hardhat-ethers";
 require('dotenv').config();
-require("@nomiclabs/hardhat-etherscan");
-module.exports = {
-  solidity: "0.8.18",
-  defaultNetwork: "sepolia",
-  networks: {
-    hardhat: {},
-    sepolia: {
-      url: process.env.ALCHEMY_API,
-      accounts: [`0x${process.env.PRIVATE_KEY}`]
-    }
-  },
-  etherscan: {
-    apiKey: process.env.ETHERSCAN_API
+import "@nomiclabs/hardhat-etherscan";
+export const solidity = "0.8.18";
+export const defaultNetwork = "sepolia";
+export const networks = {
+  hardhat: {},
+  sepolia: {
+    url: process.env.ALCHEMY_API,
+    accounts: [`0x${process.env.PRIVATE_KEY}`]
   }
+};
+export const etherscan = {
+  apiKey: process.env.ETHERSCAN_API
 };

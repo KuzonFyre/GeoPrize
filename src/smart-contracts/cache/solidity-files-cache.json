@@ -36,10 +36,10 @@
         "HelloWorld"
       ]
     },
-    "C:\\Users\\hamil\\GeoPrize\\src\\smart-contracts\\contracts\\GeoPrize-Contrac.sol": {
-      "lastModificationDate": 1682352239756,
-      "contentHash": "d41d8cd98f00b204e9800998ecf8427e",
-      "sourceName": "contracts/GeoPrize-Contrac.sol",
+    "C:\\Users\\hamil\\GeoPrize\\src\\smart-contracts\\contracts\\GeoPrize-Contract.sol": {
+      "lastModificationDate": 1682377158903,
+      "contentHash": "c386909356d1092639b4938b0e2ab7fd",
+      "sourceName": "contracts/GeoPrize-Contract.sol",
       "solcConfig": {
         "version": "0.8.18",
         "settings": {
@@ -64,8 +64,12 @@
         }
       },
       "imports": [],
-      "versionPragmas": [],
-      "artifacts": []
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "GeoPrize"
+      ]
     }
   }
 }
