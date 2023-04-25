@@ -158,7 +158,7 @@ function DeployContract({ provider }: { provider: ethers.providers.Web3Provider 
       try {
         const signer = provider.getSigner();
         const factory = new ethers.ContractFactory(HelloWorld.abi, HelloWorld.bytecode, signer);
-        const contract = await factory.deploy();
+        const contract = await factory.deploy("Hello There!");
         await contract.deployed();
         setStatus(`Contract deployed at address: ${contract.address}`);
       } catch (error) {
