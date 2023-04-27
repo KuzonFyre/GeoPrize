@@ -9,16 +9,32 @@ import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.s
 
 
 function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.providers.Web3Provider, contractAddress: string}) {
-  const [latitude, setLatitude] = useState<number>(0);
-  const [longitude, setLongitude] = useState<number>(0);
+  // const [latitude, setLatitude] = useState<number>(0);
+  // const [longitude, setLongitude] = useState<number>(0);
   const [status, setStatus] = useState<string>('');
 
   const receiveSepoliaEth = async () => {
     setStatus('Requesting Sepolia ETH...');
     try {
+      const options: PositionOptions = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      };
+  
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      });
+  
+      const crd = position.coords;
+      console.log("Your current position is:");
+      console.log(`Latitude : ${crd.latitude}`);
+      console.log(`Longitude: ${crd.longitude}`);
+      console.log(`More or less ${crd.accuracy} meters.`);
+      const { latitude, longitude } = crd;
+  
       const signer = provider.getSigner();
       const contract = new ethers.Contract(contractAddress, GeoPrize.abi, signer);
-      console.log(contract);
       const tx = await contract.claimReward(latitude, longitude)
       await tx.wait();
       setStatus('Sepolia ETH received!');
@@ -27,26 +43,11 @@ function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.provid
       setStatus('Failed to receive Sepolia ETH');
     }
   };
+  
 
   return (
     <div>
       <h2>Receive Sepolia ETH</h2>
-      <label>
-        Latitude:
-        <input
-          type="number"
-          value={latitude}
-          onChange={(e) => setLatitude(parseFloat(e.target.value))}
-        />
-      </label>
-      <label>
-        Longitude:
-        <input
-          type="number"
-          value={longitude}
-          onChange={(e) => setLongitude(parseFloat(e.target.value))}
-        />
-      </label>
       <button onClick={receiveSepoliaEth}>Receive Sepolia ETH</button>
       <p>{status}</p>
     </div>
