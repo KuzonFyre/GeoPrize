@@ -1,17 +1,27 @@
 import React from 'react'
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {storage} from '../firebase'
-//@ts-ignore"
-import {HelloWorldContract} from "../smart-contracts/deployments/interact.js";
 import alchemyLogo from "../assets/alchemylogo.svg";
 import { ethers} from 'ethers';
 import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.sol/GeoPrize.json";
 
 
+
 function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.providers.Web3Provider, contractAddress: string}) {
-  // const [latitude, setLatitude] = useState<number>(0);
-  // const [longitude, setLongitude] = useState<number>(0);
   const [status, setStatus] = useState<string>('');
+  function convertToInteger(latitude: number, longitude: number): [string, string] {
+    // // Get the number of decimal places for each value
+    // const latitudeDecimals = (latitude.toString().split('.')[1] || '').length;
+    // const longitudeDecimals = (longitude.toString().split('.')[1] || '').length;
+  
+    // // Calculate the multiplier needed to convert each value to an integer
+    // const multiplier = Math.pow(10, Math.max(latitudeDecimals, longitudeDecimals));
+    // Multiply the values and round them to integers
+    const latInt = Math.round(latitude * Math.pow(10,14)).toString();
+    const longInt = Math.round(longitude * Math.pow(10,14)).toString();
+    console.log(latInt, longInt);
+    return [latInt, longInt];
+  }
 
   const receiveSepoliaEth = async () => {
     setStatus('Requesting Sepolia ETH...');
@@ -35,7 +45,12 @@ function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.provid
   
       const signer = provider.getSigner();
       const contract = new ethers.Contract(contractAddress, GeoPrize.abi, signer);
-      const tx = await contract.claimReward(latitude, longitude)
+      const lat = await contract.minLatitude();
+      console.log(lat.toString());
+      console.log(crd.latitude);
+      const conversion = convertToInteger(latitude, longitude);
+      console.log(conversion[0]);
+      const tx = await contract.claimReward(conversion[0], conversion[1])
       await tx.wait();
       setStatus('Sepolia ETH received!');
     } catch (error) {
@@ -76,7 +91,7 @@ export const Contract = () => {
     <div>
       <h1>Deploy SimpleStorage Contract</h1>
       {provider ? (
-        <ReceiveSepoliaEth provider={provider} contractAddress='0x6196F58CA6d16C5D8595287e121fe28049183b0e'/>
+        <ReceiveSepoliaEth provider={provider} contractAddress='0x2cF4EF22F4E25dbF001D35F7A97778920CCBcf4c'/>
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}

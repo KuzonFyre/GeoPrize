@@ -126,7 +126,6 @@ function MyMapComponent({
 
 function MetaMask({position, radius}: {position: google.maps.LatLngLiteral, radius: number}) {
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
-
   const connectWallet = async () => {
     if (!window.ethereum) {
       alert("Please install MetaMask");
@@ -158,15 +157,33 @@ function MetaMask({position, radius}: {position: google.maps.LatLngLiteral, radi
 
 function DeployContract({ provider, position, radius}: { provider: ethers.providers.Web3Provider, position: google.maps.LatLngLiteral, radius: number}) {
     const [status, setStatus] = useState<string>('');
-  
+    function convertToInteger(latitude: number, longitude: number): [string, string] {
+      // Get the number of decimal places for each value
+      const latitudeDecimals = (latitude.toString().split('.')[1] || '').length;
+      const longitudeDecimals = (longitude.toString().split('.')[1] || '').length;
+    
+      console.log(latitudeDecimals, longitudeDecimals);
+      // Calculate the multiplier needed to convert each value to an integer
+      const multiplier = Math.pow(10, Math.max(latitudeDecimals, longitudeDecimals));
+    
+      // Multiply the values and round them to integers
+      const latInt = Math.round(latitude * multiplier).toString();
+      const longInt = Math.round(longitude * multiplier).toString();
+    
+      return [latInt, longInt];
+    }
+
     const deploy = async () => {
       setStatus('Deploying contract...');
       try {
         const signer = provider.getSigner();
-        console.log(signer);
+        const val = radius * 0.01;
         const factory = new ethers.ContractFactory(GeoPrize.abi, GeoPrize.bytecode, signer);
+        const [latInt, longInt] = convertToInteger(position.lat-val, position.lng-val);
+        const [latInt2, longInt2] = convertToInteger(position.lat+val, position.lng+val);
+        console.log(latInt, longInt, latInt2, longInt2);
         const contract = await factory.deploy(
-          40,-74,41,-73,
+          latInt,longInt,latInt2,longInt2,
           ethers.utils.parseEther("0.005")
       );
         await contract.deployed();
