@@ -4,7 +4,8 @@ import "./CreateContract.css"
 import Slider from '@mui/material/Slider';
 import {ethers} from "ethers";
 // TODO
-import HelloWorld from "../smart-contracts/artifacts/contracts/FirstContract.sol/HelloWorld.json";
+//import HelloWorld from "../smart-contracts/artifacts/contracts/FirstContract.sol/HelloWorld.json";
+import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.sol/GeoPrize.json";
 export const CreateContract = () => {
   const center: google.maps.LatLngLiteral = { lat: 40.7128, lng: -74.006 };
   const zoom = 8;
@@ -15,6 +16,9 @@ export const CreateContract = () => {
     setPosition(newValue);
   }
 
+  function handleRadiusState(newValue: number){
+    setRadius(newValue);
+  }
   function handleSubmit(){
     setStatus("Deploying contract...");
 
@@ -25,7 +29,7 @@ export const CreateContract = () => {
       <h1>Create Contract</h1>
     <div className="container">
       <Wrapper apiKey={import.meta.env.VITE_GOOGLEMAPS_API_KEY}>
-        <MyMapComponent center={center} zoom={zoom} changePosition={handlePositionState} radius={radius}/>
+        <MyMapComponent center={center} zoom={zoom} changePosition={handlePositionState} changeRadius={handleRadiusState} radius={radius}/>
       </Wrapper>
     </div>
     <p>
@@ -34,7 +38,7 @@ export const CreateContract = () => {
     <Slider value = {radius} aria-label="Default" valueLabelDisplay="auto" step={10} marks={true} onChange={(event,newValue: number | number[])=> setRadius(newValue as number)}></Slider>
     <button onClick={handleSubmit}>Submit</button>
     <p>{radius}</p>
-    <MetaMask />
+    <MetaMask position={position} radius={radius}/>
     </div>
   );
 }
@@ -43,11 +47,13 @@ function MyMapComponent({
   center,
   zoom,
   changePosition,
+  changeRadius,
   radius
 }: {
   center: google.maps.LatLngLiteral;
   zoom: number;
   changePosition: (newValue: google.maps.LatLngLiteral) => void;
+  changeRadius: (newValue: number) => void;
   radius: number;
 }) {
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -118,7 +124,7 @@ function MyMapComponent({
   return <div ref={myRef} id="map" style={{ width: "100%", height: "100%" }}></div>;
 }
 
-function MetaMask() {
+function MetaMask({position, radius}: {position: google.maps.LatLngLiteral, radius: number}) {
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
 
   const connectWallet = async () => {
@@ -128,7 +134,7 @@ function MetaMask() {
     }
     try {
       if (window.ethereum.request){
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        console.log(await window.ethereum.request({ method: 'eth_requestAccounts' }));
         const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
         setProvider(web3Provider);
       }
@@ -142,7 +148,7 @@ function MetaMask() {
     <div>
       <h1>Deploy SimpleStorage Contract</h1>
       {provider ? (
-        <DeployContract provider={provider} />
+        <DeployContract position= {position} provider={provider} radius = {radius}/>
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
@@ -150,15 +156,19 @@ function MetaMask() {
   );
 }
 
-function DeployContract({ provider }: { provider: ethers.providers.Web3Provider }) {
+function DeployContract({ provider, position, radius}: { provider: ethers.providers.Web3Provider, position: google.maps.LatLngLiteral, radius: number}) {
     const [status, setStatus] = useState<string>('');
   
     const deploy = async () => {
       setStatus('Deploying contract...');
       try {
         const signer = provider.getSigner();
-        const factory = new ethers.ContractFactory(HelloWorld.abi, HelloWorld.bytecode, signer);
-        const contract = await factory.deploy("Hello There!");
+        console.log(signer);
+        const factory = new ethers.ContractFactory(GeoPrize.abi, GeoPrize.bytecode, signer);
+        const contract = await factory.deploy(
+          40,-74,41,-73,
+          ethers.utils.parseEther("0.005")
+      );
         await contract.deployed();
         setStatus(`Contract deployed at address: ${contract.address}`);
       } catch (error) {

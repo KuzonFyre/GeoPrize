@@ -4,15 +4,58 @@ import {storage} from '../firebase'
 //@ts-ignore"
 import {HelloWorldContract} from "../smart-contracts/deployments/interact.js";
 import alchemyLogo from "../assets/alchemylogo.svg";
+import { ethers, providers } from 'ethers';
+import HelloWorld from "../smart-contracts/artifacts/contracts/FirstContract.sol/HelloWorld.json";
 
 
-    function addSmartContractListener() { //TODO: implement
-    
-  }
+function ReceiveSepoliaEth(provider: ethers.providers.Web3Provider , contractAddress: string) {
+  const [latitude, setLatitude] = useState<number>(0);
+  const [longitude, setLongitude] = useState<number>(0);
+  const [status, setStatus] = useState<string>('');
 
-  function addWalletListener() { //TODO: implement
-    
-  }
+  const receiveSepoliaEth = async () => {
+    setStatus('Requesting Sepolia ETH...');
+    try {
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, HelloWorld.abi, signer);
+
+      // Replace "awardSepoliaEth" with your contract's function name
+      const tx = await contract.awardSepoliaEth(latitude, longitude);
+      await tx.wait();
+      setStatus('Sepolia ETH received!');
+    } catch (error) {
+      console.error('Failed to receive Sepolia ETH:', error);
+      setStatus('Failed to receive Sepolia ETH');
+    }
+  };
+
+  return (
+    <div>
+      <h2>Receive Sepolia ETH</h2>
+      <label>
+        Latitude:
+        <input
+          type="number"
+          value={latitude}
+          onChange={(e) => setLatitude(parseFloat(e.target.value))}
+        />
+      </label>
+      <label>
+        Longitude:
+        <input
+          type="number"
+          value={longitude}
+          onChange={(e) => setLongitude(parseFloat(e.target.value))}
+        />
+      </label>
+      <button onClick={receiveSepoliaEth}>Receive Sepolia ETH</button>
+      <p>{status}</p>
+    </div>
+  );
+};
+
+export default ReceiveSepoliaEth;
+
 
   const connectWalletPressed = async () => { //TODO: implement
     

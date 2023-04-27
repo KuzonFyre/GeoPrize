@@ -17,6 +17,7 @@
   "dependencies": {
     "@chainlink/contracts": "^0.5.1",
     "@openzeppelin/contracts": "^4.8.3",
+    "abdk-libraries-solidity": "^3.2.0",
     "dotenv": "^16.0.3",
     "ts-node": "^10.9.1"
   }
