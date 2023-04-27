@@ -4,11 +4,11 @@ import {storage} from '../firebase'
 //@ts-ignore"
 import {HelloWorldContract} from "../smart-contracts/deployments/interact.js";
 import alchemyLogo from "../assets/alchemylogo.svg";
-import { ethers, providers } from 'ethers';
-import HelloWorld from "../smart-contracts/artifacts/contracts/FirstContract.sol/HelloWorld.json";
+import { ethers} from 'ethers';
+import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.sol/GeoPrize.json";
 
 
-function ReceiveSepoliaEth(provider: ethers.providers.Web3Provider , contractAddress: string) {
+function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.providers.Web3Provider, contractAddress: string}) {
   const [latitude, setLatitude] = useState<number>(0);
   const [longitude, setLongitude] = useState<number>(0);
   const [status, setStatus] = useState<string>('');
@@ -17,10 +17,9 @@ function ReceiveSepoliaEth(provider: ethers.providers.Web3Provider , contractAdd
     setStatus('Requesting Sepolia ETH...');
     try {
       const signer = provider.getSigner();
-      const contract = new ethers.Contract(contractAddress, HelloWorld.abi, signer);
-
-      // Replace "awardSepoliaEth" with your contract's function name
-      const tx = await contract.awardSepoliaEth(latitude, longitude);
+      const contract = new ethers.Contract(contractAddress, GeoPrize.abi, signer);
+      console.log(contract);
+      const tx = await contract.claimReward(latitude, longitude)
       await tx.wait();
       setStatus('Sepolia ETH received!');
     } catch (error) {
@@ -54,95 +53,77 @@ function ReceiveSepoliaEth(provider: ethers.providers.Web3Provider , contractAdd
   );
 };
 
-export default ReceiveSepoliaEth;
+export const Contract = () => { 
+  const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
 
-
-  const connectWalletPressed = async () => { //TODO: implement
+  const connectWallet = async () => {
+    if (!window.ethereum) {
+      alert("Please install MetaMask");
+      return;
+    }
+    try {
+      if (window.ethereum.request){
+        console.log(await window.ethereum.request({ method: 'eth_requestAccounts' }));
+        setProvider(new ethers.providers.Web3Provider(window.ethereum));
+      }
     
+    } catch (error) {
+      console.error('Failed to connect to MetaMask:', error);
+    }
   };
-
-  const onUpdatePressed = async () => { //TODO: implement
-    
-  };
-export const Contract = () => {
-    const [walletAddress, setWallet] = useState("");
-      const [status, setStatus] = useState("");
-      const [message, setMessage] = useState("No connection to the network."); //default message
-      const [newMessage, setNewMessage] = useState("");
-return (<div>
-     <div id="container">
-        <img id="logo" src={alchemyLogo}></img>
-       <button id="walletButton" onClick={connectWalletPressed}>
-         {walletAddress.length > 0 ? (
-          "Connected: " +
-          String(walletAddress).substring(0, 6) +
-          "..." +
-          String(walletAddress).substring(38)
-        ) : (
-          <span>Connect Wallet</span>
-        )}
-      </button>
-
-      <h2 style={{ paddingTop: "50px" }}>Current Message:</h2>
-      <p>{message}</p>
-
-      <h2 style={{ paddingTop: "18px" }}>New Message:</h2>
-
-      <div>
-        <input
-          type="text"
-          placeholder="Update the message in your smart contract."
-          onChange={(e) => setNewMessage(e.target.value)}
-          value={newMessage}
-        />
-
-        <button id="publish" onClick={onUpdatePressed}>
-          Update
-        </button>
-      </div>
+  return (
+    <div>
+      <h1>Deploy SimpleStorage Contract</h1>
+      {provider ? (
+        <ReceiveSepoliaEth provider={provider} contractAddress='0x6196F58CA6d16C5D8595287e121fe28049183b0e'/>
+      ) : (
+        <button onClick={connectWallet}>Connect Wallet</button>
+      )}
     </div>
-</div>)
+  );
 }
 
-// import React from "react";
-// import { useEffect, useState } from "react";
-// import {
-//   helloWorldContract,
-//   connectWallet,
-//   updateMessage,
-//   loadCurrentMessage,
-//   getCurrentWalletConnected,
-// } from "./util/interact.js";
 
-// import alchemylogo from "./alchemylogo.svg";
+// export const Contract = () => {
+//     const [walletAddress, setWallet] = useState("");
+//       const [status, setStatus] = useState("");
+//       const [message, setMessage] = useState("No connection to the network."); //default message
+//       const [newMessage, setNewMessage] = useState("");
+// return (<div>
+//      <div id="container">
+//         <img id="logo" src={alchemyLogo}></img>
+//        <button id="walletButton" onClick={connectWalletPressed}>
+//          {walletAddress.length > 0 ? (
+//           "Connected: " +
+//           String(walletAddress).substring(0, 6) +
+//           "..." +
+//           String(walletAddress).substring(38)
+//         ) : (
+//           <span>Connect Wallet</span>
+//         )}
+//       </button>
 
-// const HelloWorld = () => {
-//   //state variables
-//   const [walletAddress, setWallet] = useState("");
-//   const [status, setStatus] = useState("");
-//   const [message, setMessage] = useState("No connection to the network."); //default message
-//   const [newMessage, setNewMessage] = useState("");
+//       <h2 style={{ paddingTop: "50px" }}>Current Message:</h2>
+//       <p>{message}</p>
 
-//   //called only once
-//   useEffect(async () => {
-    
-//   }, []);
+//       <h2 style={{ paddingTop: "18px" }}>New Message:</h2>
 
-//   function addSmartContractListener() { //TODO: implement
-    
-//   }
+//       <div>
+//         <input
+//           type="text"
+//           placeholder="Update the message in your smart contract."
+//           onChange={(e) => setNewMessage(e.target.value)}
+//           value={newMessage}
+//         />
 
-//   function addWalletListener() { //TODO: implement
-    
-//   }
+//         <button id="publish" onClick={onUpdatePressed}>
+//           Update
+//         </button>
+//       </div>
+//     </div>
+// </div>)
+// }
 
-//   const connectWalletPressed = async () => { //TODO: implement
-    
-//   };
-
-//   const onUpdatePressed = async () => { //TODO: implement
-    
-//   };
 
 //   //the UI of our component
 //   return (
@@ -180,5 +161,3 @@ return (<div>
 //     </div>
 //   );
 // };
-
-// export default HelloWorld;

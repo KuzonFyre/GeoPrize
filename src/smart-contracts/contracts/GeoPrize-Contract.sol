@@ -26,15 +26,8 @@ contract GeoPrize {
         rewardAmount = _rewardAmount;
     }
 
-    function claimReward(int256 latitude, int256 longitude) external payable {
-        require(msg.value >= rewardAmount, "Not enough Ether sent to claim reward.");
+    function claimReward(int256 latitude, int256 longitude) external {
         require(isWithinBounds(latitude, longitude), "The provided coordinates are not within the specified bounds.");
-
-        // Refund any excess Ether
-        if (msg.value > rewardAmount) {
-            uint256 refundAmount = msg.value - rewardAmount;
-            payable(msg.sender).transfer(refundAmount);
-        }
 
         // Transfer reward amount to the user
         payable(msg.sender).transfer(rewardAmount);

@@ -3,9 +3,9 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import "./CreateContract.css"
 import Slider from '@mui/material/Slider';
 import {ethers} from "ethers";
-// TODO
-//import HelloWorld from "../smart-contracts/artifacts/contracts/FirstContract.sol/HelloWorld.json";
 import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.sol/GeoPrize.json";
+
+
 export const CreateContract = () => {
   const center: google.maps.LatLngLiteral = { lat: 40.7128, lng: -74.006 };
   const zoom = 8;
