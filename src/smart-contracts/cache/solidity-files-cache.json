@@ -37,8 +37,8 @@
       ]
     },
     "C:\\Users\\hamil\\GeoPrize\\src\\smart-contracts\\contracts\\GeoPrize-Contract.sol": {
-      "lastModificationDate": 1682622658330,
-      "contentHash": "d5027d4ae392f366654e035eb15ee384",
+      "lastModificationDate": 1682634632527,
+      "contentHash": "1f52f92d9e3ea58b35523fc10b7b5933",
       "sourceName": "contracts/GeoPrize-Contract.sol",
       "solcConfig": {
         "version": "0.8.18",

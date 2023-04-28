@@ -9,19 +9,19 @@ import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.s
 
 function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.providers.Web3Provider, contractAddress: string}) {
   const [status, setStatus] = useState<string>('');
-  function convertToInteger(latitude: number, longitude: number): [string, string] {
-    // // Get the number of decimal places for each value
-    // const latitudeDecimals = (latitude.toString().split('.')[1] || '').length;
-    // const longitudeDecimals = (longitude.toString().split('.')[1] || '').length;
+  // function convertToInteger(latitude: number, longitude: number): [string, string] {
+  //   // // Get the number of decimal places for each value
+  //   // const latitudeDecimals = (latitude.toString().split('.')[1] || '').length;
+  //   // const longitudeDecimals = (longitude.toString().split('.')[1] || '').length;
   
-    // // Calculate the multiplier needed to convert each value to an integer
-    // const multiplier = Math.pow(10, Math.max(latitudeDecimals, longitudeDecimals));
-    // Multiply the values and round them to integers
-    const latInt = Math.round(latitude * Math.pow(10,14)).toString();
-    const longInt = Math.round(longitude * Math.pow(10,14)).toString();
-    console.log(latInt, longInt);
-    return [latInt, longInt];
-  }
+  //   // // Calculate the multiplier needed to convert each value to an integer
+  //   // const multiplier = Math.pow(10, Math.max(latitudeDecimals, longitudeDecimals));
+  //   // Multiply the values and round them to integers
+  //   const latInt = Math.round(latitude * Math.pow(10,14)).toString();
+  //   const longInt = Math.round(longitude * Math.pow(10,14)).toString();
+  //   console.log(latInt, longInt);
+  //   return [latInt, longInt];
+  // }
 
   const receiveSepoliaEth = async () => {
     setStatus('Requesting Sepolia ETH...');
@@ -45,14 +45,22 @@ function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.provid
   
       const signer = provider.getSigner();
       const contract = new ethers.Contract(contractAddress, GeoPrize.abi, signer);
-      const lat = await contract.minLatitude();
-      console.log(lat.toString());
-      console.log(crd.latitude);
-      const conversion = convertToInteger(latitude, longitude);
-      console.log(conversion[0]);
-      const tx = await contract.claimReward(conversion[0], conversion[1])
-      await tx.wait();
-      setStatus('Sepolia ETH received!');
+      const minLat= (await contract.minLatitude()) / Math.pow(10,14);
+      const minLong = await contract.minLongitude() / Math.pow(10,14);
+      const maxLat = await contract.maxLatitude() / Math.pow(10,14);
+      const maxLong = await contract.maxLongitude() / Math.pow(10,14);
+      console.log(minLat, minLong, maxLat, maxLong);
+      console.log(latitude <= maxLat)
+      console.log(latitude,maxLat)
+      console.log(longitude >= minLong)
+      console.log(longitude, minLong)
+      if (latitude >= minLat && latitude <= maxLat && longitude >= minLong && longitude <= maxLong){
+        const tx = await contract.claimReward({gasLimit: 500000});
+        await tx.wait();
+        setStatus('Sepolia ETH received!');
+      } else {
+        setStatus('You are not close enough to the reward zone!');
+      }
     } catch (error) {
       console.error('Failed to receive Sepolia ETH:', error);
       setStatus('Failed to receive Sepolia ETH');
@@ -91,7 +99,7 @@ export const Contract = () => {
     <div>
       <h1>Deploy SimpleStorage Contract</h1>
       {provider ? (
-        <ReceiveSepoliaEth provider={provider} contractAddress='0x2cF4EF22F4E25dbF001D35F7A97778920CCBcf4c'/>
+        <ReceiveSepoliaEth provider={provider} contractAddress='0x7b95E2Db1FC0D5950f1AaDDB4b94E54a343b7427'/>
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}

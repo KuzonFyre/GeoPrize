@@ -183,8 +183,9 @@ function DeployContract({ provider, position, radius}: { provider: ethers.provid
         const [latInt2, longInt2] = convertToInteger(position.lat+val, position.lng+val);
         console.log(latInt, longInt, latInt2, longInt2);
         const contract = await factory.deploy(
-          latInt,longInt,latInt2,longInt2,
-          ethers.utils.parseEther("0.005")
+          latInt,latInt2,longInt,longInt2,{
+            value: ethers.utils.parseEther("0.2"),
+          }
       );
         await contract.deployed();
         setStatus(`Contract deployed at address: ${contract.address}`);
