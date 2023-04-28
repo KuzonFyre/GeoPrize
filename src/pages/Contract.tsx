@@ -45,22 +45,11 @@ function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.provid
   
       const signer = provider.getSigner();
       const contract = new ethers.Contract(contractAddress, GeoPrize.abi, signer);
-      const minLat= (await contract.minLatitude()) / Math.pow(10,14);
-      const minLong = await contract.minLongitude() / Math.pow(10,14);
-      const maxLat = await contract.maxLatitude() / Math.pow(10,14);
-      const maxLong = await contract.maxLongitude() / Math.pow(10,14);
-      console.log(minLat, minLong, maxLat, maxLong);
-      console.log(latitude <= maxLat)
-      console.log(latitude,maxLat)
-      console.log(longitude >= minLong)
-      console.log(longitude, minLong)
-      if (latitude >= minLat && latitude <= maxLat && longitude >= minLong && longitude <= maxLong){
-        const tx = await contract.claimReward({gasLimit: 500000});
+      const lat = (latitude * await contract.multiplier()).toString();
+      const long = (longitude * await contract.multiplier()).toString();
+        const tx = await contract.claimReward(lat, long, {gasLimit: 500000});
         await tx.wait();
         setStatus('Sepolia ETH received!');
-      } else {
-        setStatus('You are not close enough to the reward zone!');
-      }
     } catch (error) {
       console.error('Failed to receive Sepolia ETH:', error);
       setStatus('Failed to receive Sepolia ETH');
@@ -99,89 +88,10 @@ export const Contract = () => {
     <div>
       <h1>Deploy SimpleStorage Contract</h1>
       {provider ? (
-        <ReceiveSepoliaEth provider={provider} contractAddress='0x7b95E2Db1FC0D5950f1AaDDB4b94E54a343b7427'/>
+        <ReceiveSepoliaEth provider={provider} contractAddress='0xF7F13262a14C12b36E774211F1C0610479552Afc'/>
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
     </div>
   );
 }
-
-
-// export const Contract = () => {
-//     const [walletAddress, setWallet] = useState("");
-//       const [status, setStatus] = useState("");
-//       const [message, setMessage] = useState("No connection to the network."); //default message
-//       const [newMessage, setNewMessage] = useState("");
-// return (<div>
-//      <div id="container">
-//         <img id="logo" src={alchemyLogo}></img>
-//        <button id="walletButton" onClick={connectWalletPressed}>
-//          {walletAddress.length > 0 ? (
-//           "Connected: " +
-//           String(walletAddress).substring(0, 6) +
-//           "..." +
-//           String(walletAddress).substring(38)
-//         ) : (
-//           <span>Connect Wallet</span>
-//         )}
-//       </button>
-
-//       <h2 style={{ paddingTop: "50px" }}>Current Message:</h2>
-//       <p>{message}</p>
-
-//       <h2 style={{ paddingTop: "18px" }}>New Message:</h2>
-
-//       <div>
-//         <input
-//           type="text"
-//           placeholder="Update the message in your smart contract."
-//           onChange={(e) => setNewMessage(e.target.value)}
-//           value={newMessage}
-//         />
-
-//         <button id="publish" onClick={onUpdatePressed}>
-//           Update
-//         </button>
-//       </div>
-//     </div>
-// </div>)
-// }
-
-
-//   //the UI of our component
-//   return (
-//     <div id="container">
-//       <img id="logo" src={alchemylogo}></img>
-//       <button id="walletButton" onClick={connectWalletPressed}>
-//         {walletAddress.length > 0 ? (
-//           "Connected: " +
-//           String(walletAddress).substring(0, 6) +
-//           "..." +
-//           String(walletAddress).substring(38)
-//         ) : (
-//           <span>Connect Wallet</span>
-//         )}
-//       </button>
-
-//       <h2 style={{ paddingTop: "50px" }}>Current Message:</h2>
-//       <p>{message}</p>
-
-//       <h2 style={{ paddingTop: "18px" }}>New Message:</h2>
-
-//       <div>
-//         <input
-//           type="text"
-//           placeholder="Update the message in your smart contract."
-//           onChange={(e) => setNewMessage(e.target.value)}
-//           value={newMessage}
-//         />
-//         <p id="status">{status}</p>
-
-//         <button id="publish" onClick={onUpdatePressed}>
-//           Update
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };

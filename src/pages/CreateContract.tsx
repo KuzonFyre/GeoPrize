@@ -157,12 +157,11 @@ function MetaMask({position, radius}: {position: google.maps.LatLngLiteral, radi
 
 function DeployContract({ provider, position, radius}: { provider: ethers.providers.Web3Provider, position: google.maps.LatLngLiteral, radius: number}) {
     const [status, setStatus] = useState<string>('');
-    function convertToInteger(latitude: number, longitude: number): [string, string] {
+    function convertToInteger(latitude: number, longitude: number): [string, string, number] {
       // Get the number of decimal places for each value
       const latitudeDecimals = (latitude.toString().split('.')[1] || '').length;
       const longitudeDecimals = (longitude.toString().split('.')[1] || '').length;
     
-      console.log(latitudeDecimals, longitudeDecimals);
       // Calculate the multiplier needed to convert each value to an integer
       const multiplier = Math.pow(10, Math.max(latitudeDecimals, longitudeDecimals));
     
@@ -170,7 +169,7 @@ function DeployContract({ provider, position, radius}: { provider: ethers.provid
       const latInt = Math.round(latitude * multiplier).toString();
       const longInt = Math.round(longitude * multiplier).toString();
     
-      return [latInt, longInt];
+      return [latInt, longInt, multiplier];
     }
 
     const deploy = async () => {
@@ -179,12 +178,12 @@ function DeployContract({ provider, position, radius}: { provider: ethers.provid
         const signer = provider.getSigner();
         const val = radius * 0.01;
         const factory = new ethers.ContractFactory(GeoPrize.abi, GeoPrize.bytecode, signer);
-        const [latInt, longInt] = convertToInteger(position.lat-val, position.lng-val);
+        const [latInt, longInt,multiplier] = convertToInteger(position.lat-val, position.lng-val);
         const [latInt2, longInt2] = convertToInteger(position.lat+val, position.lng+val);
         console.log(latInt, longInt, latInt2, longInt2);
         const contract = await factory.deploy(
-          latInt,latInt2,longInt,longInt2,{
-            value: ethers.utils.parseEther("0.2"),
+          latInt,latInt2,longInt,longInt2,multiplier,{
+            value: ethers.utils.parseEther("0.005"),
           }
       );
         await contract.deployed();
