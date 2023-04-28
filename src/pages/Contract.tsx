@@ -9,19 +9,6 @@ import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.s
 
 function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.providers.Web3Provider, contractAddress: string}) {
   const [status, setStatus] = useState<string>('');
-  // function convertToInteger(latitude: number, longitude: number): [string, string] {
-  //   // // Get the number of decimal places for each value
-  //   // const latitudeDecimals = (latitude.toString().split('.')[1] || '').length;
-  //   // const longitudeDecimals = (longitude.toString().split('.')[1] || '').length;
-  
-  //   // // Calculate the multiplier needed to convert each value to an integer
-  //   // const multiplier = Math.pow(10, Math.max(latitudeDecimals, longitudeDecimals));
-  //   // Multiply the values and round them to integers
-  //   const latInt = Math.round(latitude * Math.pow(10,14)).toString();
-  //   const longInt = Math.round(longitude * Math.pow(10,14)).toString();
-  //   console.log(latInt, longInt);
-  //   return [latInt, longInt];
-  // }
 
   const receiveSepoliaEth = async () => {
     setStatus('Requesting Sepolia ETH...');

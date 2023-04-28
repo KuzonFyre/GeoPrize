@@ -7,38 +7,30 @@ import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.s
 
 
 export const CreateContract = () => {
-  const center: google.maps.LatLngLiteral = { lat: 40.7128, lng: -74.006 };
+  const center: google.maps.LatLngLiteral = { lat: 41.74078398514266, lng: -111.81450941381996};
   const zoom = 8;
   const [position, setPosition] = useState<google.maps.LatLngLiteral>(center);
-  const [radius, setRadius] = useState<number>(50);
-  const [status, setStatus] = useState('');
-  function handlePositionState(newValue: google.maps.LatLngLiteral){
+  const [latLangModifier, setLatLangModifier] = useState<number>(.005);
+  function handlePositionState(newValue: google.maps.LatLngLiteral,newLatLangModifier: number){
     setPosition(newValue);
+    setLatLangModifier(newLatLangModifier);
   }
 
-  function handleRadiusState(newValue: number){
-    setRadius(newValue);
-  }
-  function handleSubmit(){
-    setStatus("Deploying contract...");
 
-    console.log(position);
-  }
   return (
     <div>
       <h1>Create Contract</h1>
     <div className="container">
       <Wrapper apiKey={import.meta.env.VITE_GOOGLEMAPS_API_KEY}>
-        <MyMapComponent center={center} zoom={zoom} changePosition={handlePositionState} changeRadius={handleRadiusState} radius={radius}/>
+        <MyMapComponent center={position} zoom={zoom} changePosition={handlePositionState} latLangModifier={latLangModifier}/>
       </Wrapper>
     </div>
     <p>
       Selected Postion: {position?.lat}, {position?.lng}
     </p>
-    <Slider value = {radius} aria-label="Default" valueLabelDisplay="auto" step={10} marks={true} onChange={(event,newValue: number | number[])=> setRadius(newValue as number)}></Slider>
-    <button onClick={handleSubmit}>Submit</button>
-    <p>{radius}</p>
-    <MetaMask position={position} radius={radius}/>
+    <Slider value = {latLangModifier} aria-label="Default" valueLabelDisplay="auto" min={0.005} step= {0.005} max = {0.5} onChange={(event,newValue: number | number[])=> setLatLangModifier(newValue as number)}></Slider>
+    <p>{latLangModifier}</p>
+    <MetaMask position={position} latLangModifier={latLangModifier}/>
     </div>
   );
 }
@@ -47,26 +39,29 @@ function MyMapComponent({
   center,
   zoom,
   changePosition,
-  changeRadius,
-  radius
+  latLangModifier,
 }: {
   center: google.maps.LatLngLiteral;
   zoom: number;
-  changePosition: (newValue: google.maps.LatLngLiteral) => void;
-  changeRadius: (newValue: number) => void;
-  radius: number;
+  changePosition: (newValue: google.maps.LatLngLiteral,newLatLangModifier: number) => void;
+  latLangModifier: number;
 }) {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [marker, setMarker] = useState<google.maps.Marker | null>(null);
   const myRef = useRef<HTMLDivElement>(null);
-  const [circle, setCircle] = useState<google.maps.Circle | null>(null);
+  const [rectangle, setRectangle] = useState<google.maps.Rectangle | null>(null);
 
 
   useEffect(() => {
-    if (circle) {
-      circle.setRadius(radius);
+    if(rectangle){
+      rectangle.setBounds({
+        north: center.lat + latLangModifier,
+        south: center.lat - latLangModifier,
+        east: center.lng + latLangModifier,
+        west: center.lng - latLangModifier
+      });
     }
-  }, [radius]);
+  }, [latLangModifier]);
 
   useEffect(() => {
     if (myRef.current) {
@@ -82,17 +77,21 @@ function MyMapComponent({
         position,
         map,
       });
-      const newCircle = new window.google.maps.Circle({
-          strokeColor: "#FF0000",
-          strokeOpacity: 0.8,
-          strokeWeight: 2,
-          fillColor: "#FF0000",
-          fillOpacity: 0.35,
-          map,
-          center: position,
-          radius
-        });
-      setCircle(newCircle);
+      const newRectangle = new window.google.maps.Rectangle({
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#FF0000",
+        fillOpacity: 0.35,
+        map,
+        bounds: {
+          north: center.lat + latLangModifier,
+          south: center.lat - latLangModifier,
+          east: center.lng + latLangModifier,
+          west: center.lng - latLangModifier
+        }
+      });
+      setRectangle(newRectangle);
       setMarker(newMarker);
       setMap(newMap);
     }
@@ -106,13 +105,17 @@ function MyMapComponent({
           lng: mapsMouseEvent.latLng.lng()
         };
         
+        const newLatLangModifier = latLangModifier;
         marker?.setPosition(position);
-        circle?.setCenter(position);
-        // circle?.setRadius(radius);
-        changePosition(position);
+        rectangle?.setBounds({
+          north: position.lat + newLatLangModifier,
+          south: position.lat - newLatLangModifier,
+          east: position.lng + newLatLangModifier,
+          west: position.lng - newLatLangModifier
+        });
+        changePosition(position, newLatLangModifier);
         marker?.setMap(map);
-        circle?.setMap(map);
-        
+        rectangle?.setMap(map);
       });
       return () => {
         // Remove the click listener when the component is unmounted
@@ -124,7 +127,7 @@ function MyMapComponent({
   return <div ref={myRef} id="map" style={{ width: "100%", height: "100%" }}></div>;
 }
 
-function MetaMask({position, radius}: {position: google.maps.LatLngLiteral, radius: number}) {
+function MetaMask({position, latLangModifier}: {position: google.maps.LatLngLiteral, latLangModifier: number}) {
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
   const connectWallet = async () => {
     if (!window.ethereum) {
@@ -147,7 +150,7 @@ function MetaMask({position, radius}: {position: google.maps.LatLngLiteral, radi
     <div>
       <h1>Deploy SimpleStorage Contract</h1>
       {provider ? (
-        <DeployContract position= {position} provider={provider} radius = {radius}/>
+        <DeployContract position= {position} provider={provider} latLangModifier = {latLangModifier}/>
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}
@@ -155,7 +158,7 @@ function MetaMask({position, radius}: {position: google.maps.LatLngLiteral, radi
   );
 }
 
-function DeployContract({ provider, position, radius}: { provider: ethers.providers.Web3Provider, position: google.maps.LatLngLiteral, radius: number}) {
+function DeployContract({ provider, position, latLangModifier}: { provider: ethers.providers.Web3Provider, position: google.maps.LatLngLiteral, latLangModifier: number}) {
     const [status, setStatus] = useState<string>('');
     function convertToInteger(latitude: number, longitude: number): [string, string, number] {
       // Get the number of decimal places for each value
@@ -176,10 +179,9 @@ function DeployContract({ provider, position, radius}: { provider: ethers.provid
       setStatus('Deploying contract...');
       try {
         const signer = provider.getSigner();
-        const val = radius * 0.01;
         const factory = new ethers.ContractFactory(GeoPrize.abi, GeoPrize.bytecode, signer);
-        const [latInt, longInt,multiplier] = convertToInteger(position.lat-val, position.lng-val);
-        const [latInt2, longInt2] = convertToInteger(position.lat+val, position.lng+val);
+        const [latInt, longInt,multiplier] = convertToInteger(position.lat-latLangModifier, position.lng-latLangModifier);
+        const [latInt2, longInt2] = convertToInteger(position.lat+latLangModifier, position.lng+latLangModifier);
         console.log(latInt, longInt, latInt2, longInt2);
         const contract = await factory.deploy(
           latInt,latInt2,longInt,longInt2,multiplier,{
