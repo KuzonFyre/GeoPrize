@@ -4,8 +4,9 @@ import "./CreateContract.css"
 import Slider from '@mui/material/Slider';
 import {ethers} from "ethers";
 import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.sol/GeoPrize.json";
-import {db,auth} from '../firebase'
-import {collection, doc, setDoc,getDoc} from "firebase/firestore";
+import {app,db,auth} from '../firebase'
+import {collection, doc, setDoc,getDoc,updateDoc} from "firebase/firestore";
+import { Timestamp, FieldValue, arrayUnion} from "firebase/firestore";
 
 
 export const CreateContract = () => {
@@ -162,6 +163,7 @@ function MetaMask({position, latLangModifier}: {position: google.maps.LatLngLite
 
 function DeployContract({ provider, position, latLangModifier}: { provider: ethers.providers.Web3Provider, position: google.maps.LatLngLiteral, latLangModifier: number}) {
     const [status, setStatus] = useState<string>('');
+    const [toAddress, setToAddress] = useState<string>('');
     function convertToInteger(latitude: number, longitude: number): [string, string, number] {
       // Get the number of decimal places for each value
       const latitudeDecimals = (latitude.toString().split('.')[1] || '').length;
@@ -176,13 +178,13 @@ function DeployContract({ provider, position, latLangModifier}: { provider: ethe
     
       return [latInt, longInt, multiplier];
     }
-    //0x8a694597df0b52e370C6f411F02c2dA2Ea2803f1
+    //toaddress for demo 0x8a694597df0b52e370C6f411F02c2dA2Ea2803f1
     const deploy = async () => {
       setStatus('Deploying contract...');
       try {
         const signer = provider.getSigner();
         const address = await signer.getAddress();
-        const to = ethers.utils.getAddress("0x8a694597df0b52e370C6f411F02c2dA2Ea2803f1");
+        const to = ethers.utils.getAddress(toAddress);
         const factory = new ethers.ContractFactory(GeoPrize.abi, GeoPrize.bytecode, signer);
         const [latInt, longInt,multiplier] = convertToInteger(position.lat-latLangModifier, position.lng-latLangModifier);
         const [latInt2, longInt2] = convertToInteger(position.lat+latLangModifier, position.lng+latLangModifier);
@@ -192,11 +194,14 @@ function DeployContract({ provider, position, latLangModifier}: { provider: ethe
             value: ethers.utils.parseEther("0.005"),
           });
         await contract.deployed();
-        console.log(contract);
         setStatus(`Contract deployed at address: ${contract.address}`);
         if(auth.currentUser != null){
-          const contractsRef = doc(db, "contracts");
-          setDoc(contractsRef, { to: to, from: address, address: contract.address, isAdmin: true});
+          const contractsRef = doc(db, "contracts",Date.now().toString());
+          setDoc(contractsRef, { to: to, from: address, address: contract.address});
+          const usersRef = doc(db, "users", auth.currentUser.uid);
+          updateDoc(usersRef,{ contracts: arrayUnion({ to: to, from: address, address: contract.address })});
+          }else{
+            throw new Error("not logged in");
           }
       } catch (error) {
         console.error('Failed to deploy contract:', error);
@@ -206,6 +211,8 @@ function DeployContract({ provider, position, latLangModifier}: { provider: ethe
   
     return (
       <div>
+         <label htmlFor="toAddress">To Address:</label>
+         <input type="text" id="toAddress" name="toAddress" value={toAddress} onChange={(e) => setToAddress(e.target.value)} />
         <button onClick={deploy}>Deploy SimpleStorage Contract</button>
         <p>{status}</p>
       </div>

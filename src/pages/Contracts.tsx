@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from "react";
 import {db,auth} from '../firebase'
 import { useNavigate, useParams} from "react-router-dom";
@@ -6,30 +6,49 @@ import {collection, doc, setDoc,getDoc} from "firebase/firestore";
 
 
 export const Contracts = () => {
-  // const smartContractRef = doc(collection(db, "smartcontracts"), "contract");
+  const navigate = useNavigate();
+  const [contracts, setContracts] = useState([] as Contract[]);
 
-  // async function addDoc(){
-  //   console.log("adding doc");
-  //   return await setDoc(smartContractRef, {
-  //     address: "0xF7F13262a14C12b36E774211F1C0610479552Afc"
-  //   }, { merge: true });
-  // }
-async function get(){
-  console.log(auth.currentUser);
-  if(auth.currentUser != null){
-  const docRef = doc(db, "users", auth.currentUser.uid);
-  (await getDoc(docRef)).exists() ? console.log("exists") : console.log("does not exist");
-  setDoc(docRef, { name: "Los Angeles" ,isAdmin: true});
-
+  useEffect(() => {
+    getContracts();
+  }, []);
+  type Contract = {
+    to: string;
+    from: string;
+    address: string;
+  };
+  const  getContracts = async () => {
+    if(auth.currentUser != null){
+      const userDoc = doc(db, "users", auth.currentUser.uid);
+      const userSnap = await getDoc(userDoc);
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        if(userData && userData.contracts){
+          setContracts(userData.contracts);
+        }
+    }
   }
 }
+
 
   return (
     <div>
       <h1>Contracts</h1>
-      <button onClick={() => get()}>button</button>
+      <div>
+        <ul>
+        {contracts.length > 0 && contracts && contracts.map((contract) => (
+            <li key={contract.address}>
+              <div onClick={() => navigate("../contract/" + contract.address)}>
+                Address: {contract.address}
+                To: {contract.to}
+                From: {contract.from}
+              </div>
+            </li>
+            ))}
+        </ul>
+    </div>
     </div>
   );
-};
 
+};
 
