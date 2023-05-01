@@ -176,18 +176,19 @@ function DeployContract({ provider, position, latLangModifier}: { provider: ethe
     
       return [latInt, longInt, multiplier];
     }
-
+    //0x8a694597df0b52e370C6f411F02c2dA2Ea2803f1
     const deploy = async () => {
       setStatus('Deploying contract...');
       try {
         const signer = provider.getSigner();
         const address = await signer.getAddress();
+        const to = ethers.utils.getAddress("0x8a694597df0b52e370C6f411F02c2dA2Ea2803f1");
         const factory = new ethers.ContractFactory(GeoPrize.abi, GeoPrize.bytecode, signer);
         const [latInt, longInt,multiplier] = convertToInteger(position.lat-latLangModifier, position.lng-latLangModifier);
         const [latInt2, longInt2] = convertToInteger(position.lat+latLangModifier, position.lng+latLangModifier);
         console.log(latInt, longInt, latInt2, longInt2);
         const contract = await factory.deploy(
-          latInt,latInt2,longInt,longInt2,multiplier,{
+          latInt,latInt2,longInt,longInt2,multiplier,to,{
             value: ethers.utils.parseEther("0.005"),
           });
         await contract.deployed();
@@ -195,7 +196,7 @@ function DeployContract({ provider, position, latLangModifier}: { provider: ethe
         setStatus(`Contract deployed at address: ${contract.address}`);
         if(auth.currentUser != null){
           const contractsRef = doc(db, "contracts");
-          setDoc(contractsRef, { to: "", from: address, address: contract.address, isAdmin: true});
+          setDoc(contractsRef, { to: to, from: address, address: contract.address, isAdmin: true});
           }
       } catch (error) {
         console.error('Failed to deploy contract:', error);

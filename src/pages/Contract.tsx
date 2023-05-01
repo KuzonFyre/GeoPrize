@@ -32,6 +32,7 @@ function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.provid
   
       const signer = provider.getSigner();
       const contract = new ethers.Contract(contractAddress, GeoPrize.abi, signer);
+      console.log(await contract.recipient())
       const lat = (latitude * await contract.multiplier()).toString();
       const long = (longitude * await contract.multiplier()).toString();
         const tx = await contract.claimReward(lat, long, {gasLimit: 500000});
@@ -75,7 +76,7 @@ export const Contract = () => {
     <div>
       <h1>Deploy SimpleStorage Contract</h1>
       {provider ? (
-        <ReceiveSepoliaEth provider={provider} contractAddress='0xF7F13262a14C12b36E774211F1C0610479552Afc'/>
+        <ReceiveSepoliaEth provider={provider} contractAddress='0xeCcE5466928f2031d6E2f8395D361903cE8BCdB1'/>
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}

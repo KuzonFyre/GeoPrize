@@ -30,20 +30,12 @@ export const Signup = () => {
             return;
         }
         
-        let record = {
-            "firstName": firstName,
-            "lastName": lastName,
-            "email": email,
-            "password": password
-        };
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
         const user = userCredential.user;
-        console.log(userCredential)
-        console.log(auth.currentUser);
-        if(auth.currentUser != null){
-        const docRef = doc(db, "users", auth.currentUser.uid);
+        if(user != null){
+        const docRef = doc(db, "users",user.uid);
         // getDoc(docRef)).exists() ? console.log("exists") : console.log("does not exist");
         setDoc(docRef, { name: "Los Angeles" ,isAdmin: true});
     

@@ -11,19 +11,22 @@ contract GeoPrize {
     int256 public minLongitude;
     int256 public maxLongitude;
     int256 public multiplier;
+    address payable public recipient;
 
     // Event to emit when a reward is claimed
 
-    constructor(int256 _minLatitude, int256 _maxLatitude, int256 _minLongitude, int256 _maxLongitude, int256 _multiplier) payable{
+    constructor(int256 _minLatitude, int256 _maxLatitude, int256 _minLongitude, int256 _maxLongitude, int256 _multiplier, address _recipient) payable{
         owner = payable(msg.sender);
         minLatitude = _minLatitude;
         maxLatitude = _maxLatitude;
         minLongitude = _minLongitude;
         maxLongitude = _maxLongitude;
         multiplier = _multiplier;
+        recipient = payable(_recipient);
     }
 
     function claimReward(int256 latitude, int256 longitude) external payable{
+        require(msg.sender == recipient, "Only the recipient can redeem the award");
         // Transfer reward amount to the user
         uint256 contractBalance = address(this).balance;
         require(
@@ -33,7 +36,7 @@ contract GeoPrize {
     );
         require(contractBalance > 0, "There are no funds available in the smart contract.");
 
-        payable(msg.sender).transfer(contractBalance);
+        recipient.transfer(contractBalance);
     }
 
     function deposit() external payable {
