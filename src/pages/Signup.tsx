@@ -1,10 +1,11 @@
 import React from 'react'
 import {useState} from 'react'
-import {app,auth} from '../firebase'
+import {db,app,auth} from '../firebase'
 import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth'
 import { useNavigate, useParams } from "react-router-dom";
 import { ApiContext } from "../contexts/api";
 import { useApi } from "../hooks/useApi";
+import {collection, doc, setDoc,getDoc} from "firebase/firestore";
 
 export const Signup = () => {
     const navigate = useNavigate();
@@ -39,6 +40,14 @@ export const Signup = () => {
       .then((userCredential) => {
         // Signed in 
         const user = userCredential.user;
+        console.log(userCredential)
+        console.log(auth.currentUser);
+        if(auth.currentUser != null){
+        const docRef = doc(db, "users", auth.currentUser.uid);
+        // getDoc(docRef)).exists() ? console.log("exists") : console.log("does not exist");
+        setDoc(docRef, { name: "Los Angeles" ,isAdmin: true});
+    
+        }
         // ...
       })
       .catch((error) => {

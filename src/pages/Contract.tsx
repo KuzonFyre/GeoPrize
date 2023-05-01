@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from "react";
-import {storage} from '../firebase'
+import {db} from '../firebase'
 import alchemyLogo from "../assets/alchemylogo.svg";
 import { ethers} from 'ethers';
 import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.sol/GeoPrize.json";

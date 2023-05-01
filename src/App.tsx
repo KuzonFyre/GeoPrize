@@ -12,7 +12,7 @@ import {Login} from './pages/Login'
 import {Signup} from './pages/Signup'
 import {Contract} from './pages/Contract'
 import { CreateContract } from './pages/CreateContract'
-
+import { Contracts } from './pages/Contracts'
 
 const router = createBrowserRouter([
   {
@@ -32,7 +32,11 @@ const router = createBrowserRouter([
         element: <Signup />
       },
       {
-        path: 'contract/',
+        path: 'contracts/',
+        element: <Contracts />
+      },
+      {
+        path: 'contract/:id',
         element: <Contract />
       }
     ]
