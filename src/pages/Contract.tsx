@@ -1,10 +1,13 @@
 import React from 'react'
 import { useState } from "react";
-import {db} from '../firebase'
+import {db,auth} from '../firebase'
 import alchemyLogo from "../assets/alchemylogo.svg";
 import { ethers} from 'ethers';
 import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.sol/GeoPrize.json";
 import { useParams } from 'react-router-dom';
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
 function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.providers.Web3Provider, contractAddress: string}) {
@@ -54,9 +57,14 @@ function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.provid
 };
 
 export const Contract = () => { 
-  const {address, to, from } = useParams();
+  const {address} = useParams();
+  const [user,loading,error] = useAuthState(auth);
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
-
+  const navigate = useNavigate();
+  useEffect(() => {
+    if(loading) return;
+    if (!user) return navigate("/login");
+  }, [user,loading]);
   const connectWallet = async () => {
     if (!window.ethereum) {
       alert("Please install MetaMask");

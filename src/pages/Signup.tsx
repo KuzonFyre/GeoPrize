@@ -2,12 +2,10 @@ import {useState} from 'react'
 import {db,auth} from '../firebase'
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import { useNavigate} from "react-router-dom";
-import { useApi } from "../hooks/useApi";
 import {doc, setDoc} from "firebase/firestore";
 
 export const Signup = () => {
     const navigate = useNavigate();
-    const api  = useApi();
     const [showError, setShowError] = useState(false);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -46,7 +44,7 @@ export const Signup = () => {
         const errorMessage = error.message;
         // ..
       });
-      navigate('../contracts/', {replace: true})
+      navigate('/', {replace: true})
 
     }
 
@@ -98,7 +96,6 @@ export const Signup = () => {
             <div className={
                 showError ? 'visible' : 'hidden'
             }>
-                <h4>Login Error!</h4>
             </div>
         </div>
     )

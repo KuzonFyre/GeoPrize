@@ -7,13 +7,20 @@ import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.s
 import {db,auth} from '../firebase'
 import {doc, setDoc,updateDoc} from "firebase/firestore";
 import { arrayUnion} from "firebase/firestore";
-
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
 
 export const CreateContract = () => {
   const center: google.maps.LatLngLiteral = { lat: 41.74078398514266, lng: -111.81450941381996};
   const zoom = 8;
   const [position, setPosition] = useState<google.maps.LatLngLiteral>(center);
   const [latLangModifier, setLatLangModifier] = useState<number>(.005);
+  const [user,loading,error] = useAuthState(auth);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if(loading) return;
+    if (!user) return navigate("/login");
+  }, [user,loading]);
   function handlePositionState(newValue: google.maps.LatLngLiteral,newLatLangModifier: number){
     setPosition(newValue);
     setLatLangModifier(newLatLangModifier);

@@ -1,36 +1,25 @@
 import React, { useEffect } from 'react'
 import { useState } from "react";
 import {db,auth} from '../firebase'
-import { useNavigate} from "react-router-dom";
-import {collection, doc, setDoc,getDoc, getDocs} from "firebase/firestore";
+import {collection, doc,getDoc, getDocs} from "firebase/firestore";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
 
 
 export const Contracts = () => {
   const navigate = useNavigate();
   const [contracts, setContracts] = useState([] as Contract[]);
-
-  useEffect(() => {
-    getContracts();
-
-  }, []);
+  const [user,loading,error] = useAuthState(auth);
+    useEffect(() => {
+      if(loading) return;
+      if (!user) return navigate("/login");
+      getContracts();
+    }, [user,loading]);
   type Contract = {
     to: string;
     from: string;
     address: string;
   };
-//   const  getContracts = async () => {
-//     console.log(auth.currentUser)
-//     if(auth.currentUser != null){
-//       const userDoc = doc(db, "users", auth.currentUser.uid);
-//       const userSnap = await getDoc(userDoc);
-//       if (userSnap.exists()) {
-//         const userData = userSnap.data();
-//         if(userData && userData.contracts){
-//           setContracts(userData.contracts);
-//         }
-//     }
-//   }
-// }
 
 async function getContracts() {
   const contractsCollection = collection(db, "contracts");
@@ -57,7 +46,6 @@ async function getContracts() {
   }
   );
   console.log(contracts);
-  // setContracts(contracts);
 }
 
 
@@ -68,7 +56,7 @@ async function getContracts() {
         <ul>
         {contracts.length > 0 && contracts && contracts.map((contract) => (
             <li key={contract.address}>
-              <div onClick={() => navigate("../contract/" + contract.address + "/" + contract.to + "/" + contract.from)}>
+              <div onClick={() => navigate("../contract/" + contract.address + "/")}>
                 Address: {contract.address}
                 To: {contract.to}
                 From: {contract.from}

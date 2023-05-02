@@ -2,11 +2,9 @@ import {useState} from 'react'
 import {auth} from '../firebase'
 import {signInWithEmailAndPassword} from 'firebase/auth'
 import { useNavigate} from "react-router-dom";
-import { useApi } from "../hooks/useApi";
 
 export const Login = () => {
     const navigate = useNavigate();
-    const api  = useApi();
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -27,8 +25,7 @@ export const Login = () => {
             const errorCode = error.code;
             const errorMessage = error.message;
         });
-        let result = await api.post("/sessions", {email, password})
-        navigate('../contracts/', {replace: true})
+        navigate('/', {replace: true})
 
     }
     return (

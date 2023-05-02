@@ -1,8 +1,5 @@
-import { useState } from 'react'
 import { createBrowserRouter, RouterProvider, useLocation } from "react-router-dom"
 import './App.css'
-import { ApiContext } from "./contexts/api"
-import { Api } from "./lib/api"
 import { Root} from './pages/Root'
 import {Login} from './pages/Login'
 import {Signup} from './pages/Signup'
@@ -33,7 +30,7 @@ const router = createBrowserRouter([
         element: <Contracts />
       },
       {
-        path: 'contract/:address/:to/:from/',
+        path: 'contract/:address/',
         element: <Contract />
       },
       {
@@ -44,12 +41,9 @@ const router = createBrowserRouter([
   }
 ])
 export const App = () => {
-  const [api, setApi] = useState(new Api());
   return (
     <>
-    <ApiContext.Provider value = {api}>
       <RouterProvider router={router} />
-    </ApiContext.Provider>
     </>
   )
 }
