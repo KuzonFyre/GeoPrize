@@ -15,10 +15,13 @@ export const CreateContract = () => {
   const zoom = 8;
   const [position, setPosition] = useState<google.maps.LatLngLiteral>(center);
   const [latLangModifier, setLatLangModifier] = useState<number>(.005);
-  const [user,loading,error] = useAuthState(auth);
+  const [user,loading] = useAuthState(auth);
   const navigate = useNavigate();
   useEffect(() => {
-    if(loading) return;
+    if(loading){
+      console.log("loading");
+      return;
+    }
     if (!user) return navigate("/login");
   }, [user,loading]);
   function handlePositionState(newValue: google.maps.LatLngLiteral,newLatLangModifier: number){
