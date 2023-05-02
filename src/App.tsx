@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider, useLocation } from "react-router-dom"
+import { createHashRouter, RouterProvider, useLocation } from "react-router-dom"
 import './App.css'
 import { Root} from './pages/Root'
 import {Login} from './pages/Login'
@@ -8,7 +8,7 @@ import { CreateContract } from './pages/CreateContract'
 import { Contracts } from './pages/Contracts'
 import { Home } from './pages/Home'
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/',
     element: <Root />,
