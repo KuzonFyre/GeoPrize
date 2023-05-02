@@ -1,10 +1,7 @@
-import React from 'react'
 import {useState} from 'react'
 import {auth} from '../firebase'
-import {getAuth, signInWithEmailAndPassword} from 'firebase/auth'
-import {connectAuthEmulator } from "firebase/auth";
-import { useNavigate, useParams } from "react-router-dom";
-import { ApiContext } from "../contexts/api";
+import {signInWithEmailAndPassword} from 'firebase/auth'
+import { useNavigate} from "react-router-dom";
 import { useApi } from "../hooks/useApi";
 
 export const Login = () => {

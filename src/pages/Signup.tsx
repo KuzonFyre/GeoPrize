@@ -1,11 +1,9 @@
-import React from 'react'
 import {useState} from 'react'
-import {db,app,auth} from '../firebase'
-import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth'
-import { useNavigate, useParams } from "react-router-dom";
-import { ApiContext } from "../contexts/api";
+import {db,auth} from '../firebase'
+import {createUserWithEmailAndPassword} from 'firebase/auth'
+import { useNavigate} from "react-router-dom";
 import { useApi } from "../hooks/useApi";
-import {collection, doc, setDoc,getDoc} from "firebase/firestore";
+import {doc, setDoc} from "firebase/firestore";
 
 export const Signup = () => {
     const navigate = useNavigate();

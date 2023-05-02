@@ -4,9 +4,9 @@ import "./CreateContract.css"
 import Slider from '@mui/material/Slider';
 import {ethers} from "ethers";
 import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.sol/GeoPrize.json";
-import {app,db,auth} from '../firebase'
-import {collection, doc, setDoc,getDoc,updateDoc} from "firebase/firestore";
-import { Timestamp, FieldValue, arrayUnion} from "firebase/firestore";
+import {db,auth} from '../firebase'
+import {doc, setDoc,updateDoc} from "firebase/firestore";
+import { arrayUnion} from "firebase/firestore";
 
 
 export const CreateContract = () => {

@@ -1,18 +1,15 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import { createBrowserRouter, RouterProvider, useLocation } from "react-router-dom"
 import './App.css'
 import { ApiContext } from "./contexts/api"
 import { Api } from "./lib/api"
-import React from 'react'
-import ReactDOM from 'react-dom/client'
 import { Root} from './pages/Root'
 import {Login} from './pages/Login'
 import {Signup} from './pages/Signup'
 import {Contract} from './pages/Contract'
 import { CreateContract } from './pages/CreateContract'
 import { Contracts } from './pages/Contracts'
+import { Home } from './pages/Home'
 
 const router = createBrowserRouter([
   {
@@ -38,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: 'contract/:address/:to/:from/',
         element: <Contract />
+      },
+      {
+        path: '/',
+        element: <Home/>
       }
     ]
   }
