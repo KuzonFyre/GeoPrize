@@ -4,12 +4,11 @@ import {db} from '../firebase'
 import alchemyLogo from "../assets/alchemylogo.svg";
 import { ethers} from 'ethers';
 import GeoPrize from "../smart-contracts/artifacts/contracts/GeoPrize-Contract.sol/GeoPrize.json";
-
+import { useParams } from 'react-router-dom';
 
 
 function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.providers.Web3Provider, contractAddress: string}) {
   const [status, setStatus] = useState<string>('');
-
   const receiveSepoliaEth = async () => {
     setStatus('Requesting Sepolia ETH...');
     try {
@@ -55,6 +54,7 @@ function ReceiveSepoliaEth({provider, contractAddress}: {provider: ethers.provid
 };
 
 export const Contract = () => { 
+  const {address, to, from } = useParams();
   const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
 
   const connectWallet = async () => {
@@ -74,9 +74,11 @@ export const Contract = () => {
   };
   return (
     <div>
-      <h1>Deploy SimpleStorage Contract</h1>
+      <h1>Your Contract</h1>
       {provider ? (
-        <ReceiveSepoliaEth provider={provider} contractAddress='0xeCcE5466928f2031d6E2f8395D361903cE8BCdB1'/>
+        address ? (
+        <ReceiveSepoliaEth provider={provider} contractAddress={address}/>
+        ) : ( <h3>Invalid Address</h3>)
       ) : (
         <button onClick={connectWallet}>Connect Wallet</button>
       )}

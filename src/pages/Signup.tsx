@@ -15,6 +15,7 @@ export const Signup = () => {
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [address, setAdress] = useState("");
 
 
     
@@ -37,7 +38,7 @@ export const Signup = () => {
         if(user != null){
         const docRef = doc(db, "users",user.uid);
         // getDoc(docRef)).exists() ? console.log("exists") : console.log("does not exist");
-        setDoc(docRef, { name: "Los Angeles" ,isAdmin: true});
+        setDoc(docRef, {address, contracts: {}, isAdmin: true});
     
         }
         // ...
@@ -78,6 +79,12 @@ export const Signup = () => {
                     placeholder="Password"
                     value={password}
                     onChange={evt => setPassword(evt.target.value)}
+                ></input>
+                <input 
+                    type="text" 
+                    placeholder="eth address"
+                    value={address}
+                    onChange={evt => setAdress(evt.target.value)}
                 ></input>
             </div>
             <div>

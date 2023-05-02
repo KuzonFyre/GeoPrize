@@ -36,7 +36,7 @@ const router = createBrowserRouter([
         element: <Contracts />
       },
       {
-        path: 'contract/:id',
+        path: 'contract/:address/:to/:from/',
         element: <Contract />
       }
     ]
